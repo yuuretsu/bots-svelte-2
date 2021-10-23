@@ -1,0 +1,26 @@
+.noscript {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  width: 100vw;
+  height: 100vh;
+}
+
+.noscript__image {
+  margin-bottom: 40px;
+}
+
+.noscript-image {
+  image-rendering: pixelated;
+  width: 100%;
+  object-fit: contain;
+}
+
+.noscript-text {
+  /* font-weight: bold; */
+  font-family: monospace;
+  font-size: 2em;
+  text-align: center;
+}

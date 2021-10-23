@@ -1,0 +1,61 @@
+body {
+  position: fixed;
+  overflow: hidden;
+  margin: 0;
+  font-family: "IBM Plex Sans", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none;
+  background-color: var(--col-bg-1);
+  color: var(--col-fg-0);
+}
+
+.static {
+  position: static;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0 0 0 0)
+}
+
+:root {
+  --shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.1);
+
+  --col-light-0: rgb(255, 255, 255);
+  --col-light-1: rgb(230, 230, 230);
+  --col-light-2: rgb(200, 200, 200);
+  --col-dark-0: rgb(10, 10, 10);
+  --col-dark-1: rgb(30, 30, 30);
+  --col-dark-2: rgb(70, 70, 70);
+  --col-primary-0: blue;
+
+  --col-fg-0: var(--col-dark-0);
+  --col-fg-1: var(--col-dark-1);
+  --col-fg-2: var(--col-dark-2);
+  --col-bg-0: var(--col-light-0);
+  --col-bg-1: var(--col-light-1);
+  --col-bg-2: var(--col-light-2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+
+    --col-fg-0: var(--col-light-0);
+    --col-fg-1: var(--col-light-1);
+    --col-fg-2: var(--col-light-2);
+    --col-bg-0: var(--col-dark-0);
+    --col-bg-1: var(--col-dark-1);
+    --col-bg-2: var(--col-dark-2);
+  }
+}
+
+/* * {
+  outline: 1px solid rgba(0, 0, 0, 0.1);
+} */
