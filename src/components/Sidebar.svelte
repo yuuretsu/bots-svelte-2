@@ -9,6 +9,7 @@
 <style>
   .sidebar {
     position: fixed;
+    box-sizing: border-box;
     left: -300px;
     top: 0px;
     width: 300px;
@@ -18,7 +19,7 @@
     color: var(--col-fg-0);
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     padding: 20px;
-    padding-top: calc(20px * 2 + 50px);
+    padding-top: calc(20px * 2 + 55px);
     padding-bottom: 0;
     /* backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px); */

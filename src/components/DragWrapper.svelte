@@ -1,16 +1,16 @@
 <script lang="ts">
-  export let height: string = "auto";
-  export let currentPos: [number, number] = [0, 0];
   function onMouseDown(e: MouseEvent) {
     initPos = [e.clientX - currentPos[0], e.clientY - currentPos[1]];
     onMouseMove = mouseMoveInner;
     onMouseUp = clearMouseEvents;
   }
+
   function mouseMoveInner(e: MouseEvent) {
     e.preventDefault();
     currentPos = [e.clientX - initPos[0], e.clientY - initPos[1]];
     document.body.style.cursor = "grabbing";
   }
+
   function clearMouseEvents() {
     onMouseMove = undefined;
     onMouseUp = undefined;
@@ -18,6 +18,7 @@
     if (!document.body.getAttribute("style"))
       document.body.removeAttribute("style");
   }
+
   function onTouchStart(e: TouchEvent) {
     let x = e.touches[0]?.clientX || 0;
     let y = e.touches[0]?.clientY || 0;
@@ -25,16 +26,21 @@
     onTouchMove = touchMoveInner;
     onTouchEnd = clearTouchEvents;
   }
+
   function touchMoveInner(e: TouchEvent) {
     currentPos = [
       e.touches[0]!.clientX - initPos[0],
       e.touches[0]!.clientY - initPos[1],
     ];
   }
+
   function clearTouchEvents() {
     onTouchMove = undefined;
     onTouchEnd = undefined;
   }
+
+  export let height: string = "auto";
+  export let currentPos: [number, number] = [0, 0];
   let onMouseMove: svelte.JSX.MouseEventHandler<Window> | undefined;
   let onMouseUp: svelte.JSX.MouseEventHandler<Window> | undefined;
   let onTouchMove: svelte.JSX.TouchEventHandler<Window> | undefined;

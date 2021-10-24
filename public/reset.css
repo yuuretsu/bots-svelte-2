@@ -1,7 +1,5 @@
-/* Box sizing rules */
-*,
-*::before,
-*::after {
+Box sizing rules
+* {
   box-sizing: border-box;
 }
 

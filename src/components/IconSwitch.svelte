@@ -19,10 +19,7 @@
 
 <style>
   .icon-switch {
-    /* width: 25px;
-    height: 25px; */
     overflow: hidden;
-    /* background-color: red; */
     border-radius: 5px;
   }
 

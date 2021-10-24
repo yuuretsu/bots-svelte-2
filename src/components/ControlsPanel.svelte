@@ -4,6 +4,7 @@
   import MdPlayArrow from "svelte-icons/md/MdPlayArrow.svelte";
   import MdPause from "svelte-icons/md/MdPause.svelte";
   import MdSkipNext from "svelte-icons/md/MdSkipNext.svelte";
+  import MdReplay from "svelte-icons/md/MdReplay.svelte";
 
   import { createEventDispatcher } from "svelte";
 
@@ -19,6 +20,10 @@
 
   function onClickStep() {
     dispatch("step");
+  }
+
+  function onClickRestart() {
+    dispatch("restart");
   }
 
   export let sidebarOpened: boolean;
@@ -43,18 +48,25 @@
   <button class="btn" on:click={onClickPlayPause}>
     <IconSwitch width="25px" switched={play}>
       <div class="icon" slot="a">
-        <span class="visually-hidden">open menu</span>
+        <span class="visually-hidden">play</span>
         <MdPlayArrow />
       </div>
       <div class="icon" slot="b">
-        <span class="visually-hidden">close menu</span>
+        <span class="visually-hidden">pause</span>
         <MdPause />
       </div>
     </IconSwitch>
   </button>
   <button class="btn" on:click={onClickStep}>
     <div class="icon">
+      <span class="visually-hidden">step</span>
       <MdSkipNext />
+    </div>
+  </button>
+  <button class="btn" on:click={onClickRestart}>
+    <div class="icon">
+      <span class="visually-hidden">restart</span>
+      <MdReplay />
     </div>
   </button>
 </div>
@@ -66,7 +78,7 @@
     left: 20px;
     top: 20px;
     padding: 10px;
-    background-color: var(--col-bg-1);
+    background-color: var(--col-bg-0);
     /* backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px); */
     border-radius: 100px;
@@ -79,12 +91,16 @@
     padding: 5px;
     border-radius: 50px;
     cursor: pointer;
-    background-color: var(--col-bg-2);
+    background-color: var(--col-bg-1);
     color: var(--col-fg-0);
   }
 
   .btn:not(:last-child) {
     margin-right: 10px;
+  }
+
+  .btn:hover {
+    background-color: var(--col-bg-2);
   }
 
   .icon {

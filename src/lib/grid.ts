@@ -1,4 +1,4 @@
-import { fixNumber, randInt } from "./helpers";
+import { clampCircular, randInt } from "./helpers";
 
 export type Coords = Readonly<[number, number]>;
 
@@ -17,8 +17,8 @@ export class Grid<T> {
   }
   fixCoords(x: number, y: number): Coords {
     return [
-      fixNumber(0, this.width, x),
-      fixNumber(0, this.height, y),
+      clampCircular(0, this.width, x),
+      clampCircular(0, this.height, y),
     ];
   }
   randCoords(): Coords {

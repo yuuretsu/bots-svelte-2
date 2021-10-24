@@ -26,6 +26,8 @@
   },
   "dependencies": {
     "sirv-cli": "^1.0.0",
-    "svelte-icons": "^2.1.0"
+    "svelte-icons": "^2.1.0",
+    "svelte-ktippy": "^1.2.0",
+    "sveltejs-tippy": "^3.0.0"
   }
 }

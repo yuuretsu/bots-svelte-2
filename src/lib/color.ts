@@ -1,10 +1,10 @@
-import { lerp, randInt } from "./helpers";
+import { lerp, randFloat, randInt } from "./helpers";
 
 type RgbaArray = [number, number, number, number];
 
 export class Rgba {
   private static readonly MAX_DIF = 255 * 4;
-  static randRgb(rand: () => number = Math.random) {
+  static randRgb(rand: () => number = () => randFloat(0, 1)) {
     return new Rgba(
       randInt(0, 256, rand),
       randInt(0, 256, rand),
