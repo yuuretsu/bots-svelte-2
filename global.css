@@ -14,14 +14,77 @@ body {
 }
 
 .visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 0 !important;
+  clip: rect(0 0 0 0) !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+
+button {
+  display: block;
+  width: 100%;
+  outline: none;
+  border: none;
+  color: var(--col-fg-0);
+  background-color: var(--col-bg-1);
+  padding: 0 20px;
+  line-height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: var(--col-bg-2);
+}
+
+input[type="checkbox"] {
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  margin-right: 5px;
+  outline: none;
+  border: none;
+}
+
+input[type="checkbox"]:checked::after {
+  transform: rotateZ(-45deg);
+  opacity: 1;
+}
+
+input[type="checkbox"]::before {
+  content: "";
+  box-sizing: border-box;
+  transform: translate(0px, 2px);
+  display: block;
+  width: 15px;
+  height: 15px;
+  border-radius: 2px;
+  background-color: rgb(80, 80, 80);
+  transition-duration: 0.2s;
+}
+
+input[type="checkbox"]::after {
+  content: "";
   position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  border: 0;
-  clip: rect(0 0 0 0)
+  display: block;
+  left: 2px;
+  top: 5px;
+  width: 12px;
+  height: 7px;
+  transform: translateY(-2px) rotateZ(-45deg);
+  border-bottom: 3px solid whitesmoke;
+  border-left: 3px solid whitesmoke;
+  opacity: 0;
+  transition-duration: 0.2s;
 }
 
 :root {
@@ -31,7 +94,7 @@ body {
   --col-light-1: rgb(230, 230, 230);
   --col-light-2: rgb(200, 200, 200);
   --col-dark-0: rgb(10, 10, 10);
-  --col-dark-1: rgb(30, 30, 30);
+  --col-dark-1: rgb(40, 40, 40);
   --col-dark-2: rgb(70, 70, 70);
   --col-primary-0: blue;
 
@@ -55,7 +118,3 @@ body {
     --col-bg-2: var(--col-dark-2);
   }
 }
-
-/* * {
-  outline: 1px solid rgba(0, 0, 0, 0.1);
-} */
