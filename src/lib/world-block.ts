@@ -1,12 +1,15 @@
+import { SvelteComponent } from "svelte";
 import { Rgba } from "./color";
 import { GenePool } from "./gene";
 import { Genome } from "./genome";
 import { Coords } from "./grid";
 import { clamp, clampCircular, randFloat, randInt } from "./helpers";
 import { World } from "./world";
+import BotComponent from "./../components/Bot.svelte";
 
 export interface IWorldBlock {
   live(x: number, y: number, world: World): void;
+  getComponent(): typeof SvelteComponent;
   onAttack(bot: Bot, value: number): number;
   getColor(): Rgba | null;
 }
@@ -80,6 +83,9 @@ export class Bot implements IWorldBlock {
     }
     this.genome.doAction(this, x, y, world);
     this.age++;
+  }
+  getComponent() {
+    return BotComponent;
   }
   getColor() {
     return this.rgba;

@@ -1,12 +1,25 @@
 <script lang="ts">
-  export let values: { value: string; content: string }[] = [];
+  import { Rgba } from "../lib/color";
+
+  export let values: { value: string; content: string; color?: Rgba }[] = [];
   export let checked: string[] = [];
+  let filter = "";
 </script>
 
 <div class="wrapper">
+  <input class="filter" placeholder="filter" type="text" bind:value={filter} />
   <div class="wrapper-inner wrapper__inner">
-    {#each values as { value, content }}
+    {#each values.filter(({ content }) => content
+        .toLowerCase()
+        .match(new RegExp(filter.toLowerCase()))) as { value, content, color }}
       <label class:checked={checked.includes(value)}>
+        <!-- {#if color}
+          <span
+            style={color && checked.includes(value)
+              ? "background-color: " + color.toString()
+              : ""}
+          />
+        {/if} -->
         <input
           type="checkbox"
           class="visually-hidden"
@@ -33,8 +46,20 @@
     display: flex;
     flex-wrap: wrap;
   }
+  .filter {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 5px 5px;
+    margin-bottom: 5px;
+    width: 100%;
+    border-radius: 5px;
+    border: none;
+    border-bottom: 1px solid var(--col-bg-2);
+    background-color: var(--col-bg-1);
+    outline: none;
+  }
   label {
-    /* flex-grow: 1; */
+    flex-grow: 1;
     display: flex;
     font-family: "IBM Plex Sans" !important;
     align-items: center;
@@ -64,6 +89,13 @@
     border-right: 3px solid transparent;
     transition-duration: 0.2s;
   }
+  /* label > span {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+    box-shadow: inset 0 0 0 1px rgb(0 0 0 / 50%);
+    margin-right: 3px;
+  } */
   .checked {
     background-color: rgb(114 255 128 / 50%);
   }

@@ -33,4 +33,7 @@ export class Rgba {
   toArray(): RgbaArray {
     return [this.red, this.green, this.blue, this.alpha];
   }
+  toString(): string {
+    return `rgba(${this.red}, ${this.green}, ${this.blue}, ${this.alpha / 255})`;
+  }
 }

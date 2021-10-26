@@ -83,4 +83,36 @@ export const GENES: { [index: string]: GeneTemplate } = {
       return { completed: true, goto: null, msg };
     }
   },
+  moveForward: {
+    name: 'Двигаться вперед',
+    description: `Бот перемещется в клетку перед собой, если она пустая.Расходует 0.5 энергии.`,
+    defaultEnabled: true,
+    color: new Rgba(200, 200, 200, 255),
+    colorInfluence: null,
+    action: (bot, x, y, world, property) => {
+      const F_COORDS = world.narrowToCoords(x, y, bot.narrow, 1);
+      const F_BLOCK = world.get(...F_COORDS);
+      let msg: string;
+      if (!F_BLOCK) {
+        world.swap(x, y, ...F_COORDS);
+        msg = `Передвижение`;
+      } else {
+        msg = `Передвижение не удалось`;
+      }
+      bot.energy -= 0.5;
+      return { completed: true, goto: null, msg };
+    }
+  },
+  movePointer: {
+    name: 'Переместить указатель',
+    description: `Следующая команда генома будет той, которая указана в ветке 1 текущего гена.`,
+    defaultEnabled: true,
+    color: null,
+    colorInfluence: null,
+    action: (bot, x, y, world, property) => {
+      const goto = property.branches[0];
+      const msg = `Перенос указателя → ${goto}`;
+      return { completed: false, goto, msg };
+    }
+  },
 }

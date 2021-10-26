@@ -36,8 +36,12 @@ button {
   color: var(--col-fg-0);
   background-color: var(--col-bg-1);
   padding: 0 20px;
-  line-height: 40px;
+  line-height: 30px;
   border-radius: 10px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   cursor: pointer;
 }
 

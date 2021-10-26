@@ -5,7 +5,7 @@
   import ControlsPanel from "./ControlsPanel.svelte";
 
   import { SquareWorld, World } from "../lib/world";
-  import { Bot, createBotAbilities } from "../lib/world-block";
+  import { Bot, createBotAbilities, IWorldBlock } from "../lib/world-block";
   import { onDestroy } from "svelte";
   import { writable } from "svelte/store";
   import { loop as createLoop } from "./../lib/loop";
@@ -19,6 +19,7 @@
   function step() {
     world.step();
     worldProps = world.getComponentProps();
+    selectedBlock && (selectedBlock = selectedBlock);
   }
 
   function onClickStep() {
@@ -30,7 +31,7 @@
     const world = new SquareWorld(width, height, genePool);
     for (let y = 0; y < world.height; y++) {
       for (let x = 0; x < world.width; x++) {
-        if (random() > 0.999) {
+        if (random() > 0.99) {
           const color = new Rgba(255, 0, 0, 255);
           const genome = new Genome(32).fillRandom(world.genePool);
           world.set(x, y, new Bot(color, 100, createBotAbilities(), genome));
@@ -50,6 +51,12 @@
     );
     world = newWorld.world;
     worldProps = newWorld.worldProps;
+  }
+
+  function onClickBlock({ detail }: { detail: { x: number; y: number } }) {
+    const { x, y } = detail;
+    selectedBlock = world.get(x, y) || null;
+    console.log(selectedBlock);
   }
 
   function stopLoop(intervalId: number | null) {
@@ -98,6 +105,8 @@
     namesToGenePool(new Set(enabledGenes), GENES)
   );
 
+  let selectedBlock: null | IWorldBlock = null;
+
   onDestroy(stopLoop.bind(null, intervalId));
 </script>
 
@@ -114,7 +123,11 @@
 <main class:show-css={showCss}>
   <div class="drag-wrapper-wrapper" class:open={sidebarOpened}>
     <DragWrapper height="100%">
-      <svelte:component this={world.getComponent()} {...worldProps} />
+      <svelte:component
+        this={world.getComponent()}
+        {...worldProps}
+        on:click-block={onClickBlock}
+      />
     </DragWrapper>
   </div>
   <Sidebar opened={sidebarOpened}>
@@ -128,11 +141,22 @@
         checkboxes: {enabledGenes.join(", ")}
       </div>
     </Accordion>
+    <Accordion title="Выделенный блок">
+      <!--  -->
+      {#if selectedBlock}
+        <svelte:component
+          this={selectedBlock.getComponent()}
+          block={selectedBlock}
+          on:deselect={() => (selectedBlock = null)}
+        />
+      {/if}
+    </Accordion>
     <Accordion title="Генофонд" opened>
       <CheckboxGroup
         values={Object.entries(GENES).map(([value, template]) => ({
           value,
           content: template.name,
+          color: template.color?.interpolate(new Rgba(255, 255, 255, 255), 0.5),
         }))}
         bind:checked={enabledGenes}
       />

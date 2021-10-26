@@ -46,7 +46,7 @@ export class SquareWorld extends World {
     return pixels;
   }
   getComponentProps() {
-    return { imageData: this.getPixels(), pixelSize: 6 };
+    return { imageData: this.getPixels(), pixelSize: 7 };
   }
   getComponent() {
     return SquareWorldComponent;
