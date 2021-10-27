@@ -137,7 +137,3 @@ input[type="checkbox"]::after {
     animation-duration: 0s !important;
   }
 }
-
-input::-webkit-inner-spin-button {
-  display: none;
-}
