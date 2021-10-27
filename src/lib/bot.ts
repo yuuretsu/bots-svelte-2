@@ -4,10 +4,15 @@ import { Genome } from "./genome";
 import { clamp, clampCircular, randInt } from "./helpers";
 import { World } from "./world";
 import { IWorldBlock } from "./world-block";
-import BotComponent from "./../components/Bot.svelte";
+import BotComponent from "../components/Bot";
 import { Store } from "./custom-store";
 
-export function createBotAbilities(): typeof Bot.prototype.abilities {
+export type BotAbilities = {
+  photosynthesis: number,
+  attack: number
+}
+
+export function createBotAbilities(): BotAbilities {
   return {
     photosynthesis: 0.5,
     attack: 0.5
@@ -20,11 +25,9 @@ export class Bot implements IWorldBlock {
   private _narrow: number = randInt(0, 8);
   constructor(
     public rgba: Rgba,
-    public energy: number,
-    public abilities: {
-      photosynthesis: number,
-      attack: number
-    },
+    private _energy: number,
+    readonly generation: number,
+    public abilities: BotAbilities,
     public genome: Genome
   ) { }
   set narrow(n: number) {
@@ -33,12 +36,19 @@ export class Bot implements IWorldBlock {
   get narrow(): number {
     return this._narrow;
   }
+  set energy(value: number) {
+    this._energy = value;
+  }
+  get energy() {
+    return +this._energy.toFixed(5);
+  }
   multiply(pool: GenePool, energyCoef: number) {
     const energy = this.energy * energyCoef;
     this.energy -= energy;
     return new Bot(
       this.rgba.interpolate(new Rgba(255, 255, 255, 255), 0.1),
       energy,
+      this.generation + 1,
       { ...this.abilities },
       this.genome.replication(pool)
     );
@@ -50,13 +60,13 @@ export class Bot implements IWorldBlock {
     this.health -= 0.1;
     return REAL_VALUE;
   }
-  increaseAbility(ability: keyof typeof Bot.prototype.abilities) {
+  increaseAbility(ability: keyof BotAbilities) {
     for (const name in this.abilities) {
       if (Object.prototype.hasOwnProperty.call(this.abilities, name)) {
-        this.abilities[name as keyof typeof Bot.prototype.abilities] = clamp(
+        this.abilities[name as typeof ability] = clamp(
           0,
           1,
-          this.abilities[name as keyof typeof Bot.prototype.abilities] + (name === ability
+          this.abilities[name as typeof ability] + (name === ability
             ? 0.01
             : -0.01
           )
@@ -66,9 +76,9 @@ export class Bot implements IWorldBlock {
   }
   live(x: number, y: number, world: World) {
     if (
-      this.age > 2000 ||
+      this.age >= 2000 ||
       this.energy < 1 ||
-      this.health < 0
+      this.health <= 0
     ) {
       world.remove(x, y);
       return;

@@ -11,7 +11,7 @@ export const GENES: { [index: string]: GeneTemplate } = {
     colorInfluence: 0.01,
     action: (bot, x, y, world, property) => {
       const value = 0.1;
-      // bot.health = Math.min(1, bot.health + 0.1);
+      bot.health = Math.min(1, bot.health + 0.1);
       return { completed: true, goto: null, msg: `Лечение +${value}` };
     }
   },
@@ -19,16 +19,16 @@ export const GENES: { [index: string]: GeneTemplate } = {
     name: 'Размножение',
     description: `Бот теряет 1/10 энергии на попытку размножения. Если клетка перед ним пуста, энергии больше 5 единиц, а возраст больше 10 кадров, бот размножается. Потомку передается количество энергии, равное параметру гена, такое же количество вычитается из собственной энергии.`,
     defaultEnabled: true,
-    color: new Rgba(0, 0, 200, 255),
+    color: new Rgba(255, 255, 200, 255),
     colorInfluence: 0.01,
     action: (bot, x, y, world, property) => {
-      const fCoords = world.narrowToCoords(x, y, bot.narrow, 1);
-      const fBlock = world.get(...fCoords);
+      const F_COORDS = world.narrowToCoords(x, y, bot.narrow, 1);
+      const F_BLOCK = world.get(...F_COORDS);
       bot.energy *= 0.9;
-      if (fBlock) return { completed: true, goto: null, msg: `Размножение не удалось: спереди блок` };
+      if (F_BLOCK) return { completed: true, goto: null, msg: `Размножение не удалось: спереди блок` };
       if (bot.energy <= 5) return { completed: true, goto: null, msg: `Размножение не удалось: мало энергии` };
       if (bot.age <= 10) return { completed: true, goto: null, msg: `Размножение не удалось: бот слишком молод` };
-      world.set(...fCoords, bot.multiply(world.genePool, property.option));
+      world.set(...F_COORDS, bot.multiply(world.genePool, property.option));
       return { completed: true, goto: null, msg: `Размножение` };
     }
   },
@@ -66,13 +66,13 @@ export const GENES: { [index: string]: GeneTemplate } = {
     color: new Rgba(255, 0, 0, 255),
     colorInfluence: 0.01,
     action: (bot, x, y, world, property) => {
-      const fBlock = world.get(
+      const F_BLOCK = world.get(
         ...world.narrowToCoords(x, y, bot.narrow, 1)
       );
       let msg: string;
-      if (fBlock) {
+      if (F_BLOCK) {
         const value = lerp(0, 5, property.option) * bot.abilities.attack ** 2;
-        const result = fBlock.onAttack(bot, value);
+        const result = F_BLOCK.onAttack(bot, value);
         bot.increaseAbility('attack');
         bot.health = Math.min(1, bot.health + 0.01);
         msg = `Атака: +${result.toFixed(2)} энергии`;
@@ -83,6 +83,28 @@ export const GENES: { [index: string]: GeneTemplate } = {
       return { completed: true, goto: null, msg };
     }
   },
+  // virus: {
+  //   name: 'Заразить геном',
+  //   description: `Бот копирует с свой геном в бота напротив, при этом есть шанс мутации.Расходует 0.1 здоровья и 0.1 энергии.`,
+  //   defaultEnabled: false,
+  //   color: new Rgba(255, 50, 255, 255),
+  //   colorInfluence: 0.05,
+  //   action: (bot, x, y, world, property) => {
+  //     const F_BLOCK = world.get(
+  //       ...world.narrowToCoords(x, y, bot.narrow, 1)
+  //     );
+  //     let msg: string;
+  //     if (F_BLOCK) {
+  //       F_BLOCK.onVirus(bot, world.genePool);
+  //       msg = `Заражение другого бота`;
+  //     } else {
+  //       msg = `Заражение не удалось`;
+  //     }
+  //     bot.health -= 0.1;
+  //     bot.energy -= 0.1;
+  //     return { completed: true, goto: null, msg };
+  //   }
+  // },
   moveForward: {
     name: 'Двигаться вперед',
     description: `Бот перемещется в клетку перед собой, если она пустая.Расходует 0.5 энергии.`,
@@ -103,6 +125,41 @@ export const GENES: { [index: string]: GeneTemplate } = {
       return { completed: true, goto: null, msg };
     }
   },
+  push: {
+    name: 'Толкнуть',
+    description: `Бот отталкивает блок перед собой на одну клетку, если клетка за ним пуста.Расходует 0.5 энергии.`,
+    defaultEnabled: true,
+    color: new Rgba(0, 0, 255, 255),
+    colorInfluence: 0.01,
+    action: (bot, x, y, world, property) => {
+      const F_COORDS = world.narrowToCoords(x, y, bot.narrow, 1);
+      const F_BLOCK = world.get(...F_COORDS);
+      const O_COORDS = world.narrowToCoords(x, y, bot.narrow, 2);
+      const O_BLOCK = world.get(...O_COORDS);
+      let msg: string;
+      if (F_BLOCK && !O_BLOCK) {
+        world.swap(...F_COORDS, ...O_COORDS);
+        msg = `Толкнул другой объект`;
+      } else {
+        msg = `Не удалось толкнуть другой объект`;
+      }
+      bot.energy -= 0.5;
+      return { completed: true, goto: null, msg };
+    }
+  },
+  swap: {
+    name: 'Меняться местами',
+    description: `Бот меняется местами с клеткой перед собой, расходуя при этом 1 энергии.`,
+    defaultEnabled: false,
+    color: new Rgba(255, 255, 255, 255),
+    colorInfluence: null,
+    action: (bot, x, y, world, property) => {
+      const F_COORDS = world.narrowToCoords(x, y, bot.narrow, 1);
+      world.swap(...F_COORDS, x, y);
+      bot.energy -= 1;
+      return { completed: true, goto: null, msg: `Поменялся местами с другой клеткой` };
+    }
+  },
   movePointer: {
     name: 'Переместить указатель',
     description: `Следующая команда генома будет той, которая указана в ветке 1 текущего гена.`,
@@ -115,4 +172,82 @@ export const GENES: { [index: string]: GeneTemplate } = {
       return { completed: false, goto, msg };
     }
   },
-}
+  checkHealth: {
+    name: 'Проверить здоровье',
+    description: `Следующая команда генома будет той, на которую указывает ветка 1 текущего гена, если здоровье бота меньше, чем параметр текущего гена.Иначе следующая команда берется из ветки 2.`,
+    defaultEnabled: true,
+    color: null,
+    colorInfluence: null,
+    action: (bot, x, y, world, property) => {
+      if (bot.health < property.option) {
+        const goto = property.branches[0];
+        const msg = `Проверка здоровья → ${goto}`;
+        return { completed: false, goto, msg };
+      }
+      const goto = property.branches[1];
+      const msg = `Проверка здоровья → ${goto}`;
+      return { completed: false, goto, msg };
+    }
+  },
+  checkEnergy: {
+    name: 'Проверить энергию',
+    description: `Следующая команда генома будет той, на которую указывает ветка 1 текущего гена, если энергия бота меньше, чем параметр текущего гена, умноженный на 300. Иначе следующая команда берется из ветки 2.`,
+    defaultEnabled: true,
+    color: null,
+    colorInfluence: null,
+    action: (bot, x, y, world, property) => {
+      if (bot.energy / 300 < property.option) {
+        const goto = property.branches[0];
+        const msg = `Проверка энергии → ${goto}`;
+        return { completed: false, goto, msg };
+      }
+      const goto = property.branches[1];
+      const msg = `Проверка энергии → ${goto}`;
+      return { completed: false, goto, msg };
+    }
+  },
+  forward: {
+    name: 'Спереди блок?',
+    description: `Следующая команда генома будет той, на которую указывает ветка 1 текущего гена, если перед ботом есть пустая клетка.Иначе следующая команда берется из ветки 2.`,
+    defaultEnabled: true,
+    color: null,
+    colorInfluence: null,
+    action: (bot, x, y, world, property) => {
+      const F_COORDS = world.narrowToCoords(x, y, bot.narrow, 1);
+      const F_BLOCK = world.get(...F_COORDS);
+      if (F_BLOCK) {
+        const goto = property.branches[0];
+        const msg = `Спереди блок → ${goto}`;
+        return { completed: false, goto, msg };
+      }
+      const goto = property.branches[1];
+      const msg = `Спереди нет блока → ${goto}`;
+      return { completed: false, goto, msg };
+    }
+  },
+  // compareFamilies: {
+  //   name: 'Спереди родственник?',
+  //   description: `Следующая команда генома будет той, на которую указывает ветка 1 текущего гена, если перед ботом находится родственник. Иначе следующая команда берется из ветки 2.`,
+  //   defaultEnabled: true,
+  //   color: null,
+  //   colorInfluence: null,
+  //   action: (bot, x, y, world, property) => {
+  //     const F_COORDS = world.narrowToCoords(x, y, bot.narrow, 1);
+  //     const F_BLOCK = world.get(...F_COORDS);
+  //     if (F_BLOCK) {
+  //       const familyColor = F_BLOCK.getFamilyColor();
+  //       if (
+  //         familyColor !== null &&
+  //         familyColor.difference(bot.familyColor) > property.option
+  //       ) {
+  //         const goto = property.branches[0];
+  //         const msg = `Спереди родственник → ${goto}`;
+  //         return { completed: false, goto, msg };
+  //       }
+  //     }
+  //     const goto = property.branches[1];
+  //     const msg = `Спереди нет родственника → ${goto}`;
+  //     return { completed: false, goto, msg };
+  //   }
+  // }
+};

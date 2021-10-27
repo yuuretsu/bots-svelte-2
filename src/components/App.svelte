@@ -37,7 +37,7 @@
         if (random() > 0.99) {
           const color = new Rgba(127, 127, 127, 127);
           const genome = new Genome(32).fillRandom(world.genePool);
-          world.set(x, y, new Bot(color, 100, createBotAbilities(), genome));
+          world.set(x, y, new Bot(color, 100, 1, createBotAbilities(), genome));
         }
       }
     }
@@ -60,6 +60,7 @@
     const { x, y } = detail;
     selectedBlock = world.get(x, y) || null;
     showSelectedBlock = !!selectedBlock;
+    showSelectedBlock && (sidebarOpened = true);
     // selectedBlock && (selectedBlock.selected = new Rgba(255, 0, 255, 255));
     worldProps = world.getComponentProps(selectedBlock);
   }
