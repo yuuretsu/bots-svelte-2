@@ -1,6 +1,11 @@
 <script lang="ts">
-  import { Bot } from "../lib/world-block";
-  import { createEventDispatcher } from "svelte";
+  import { Bot } from "../lib/bot";
+  import {
+    afterUpdate,
+    createEventDispatcher,
+    onDestroy,
+    onMount,
+  } from "svelte";
 
   function onClickDeselect() {
     dispatch("deselect");
@@ -12,4 +17,31 @@
 </script>
 
 <button on:click={onClickDeselect}>Снять выделение</button>
-Возраст: {block.age}
+
+<div>
+  Возраст: <input
+    type="number"
+    value={block.age}
+    on:input={(e) => {
+      // @ts-ignore
+      block.age = e.target.value;
+    }}
+  />
+</div>
+<div>
+  Здоровье: <input
+    type="number"
+    value={block.health}
+    on:input={(e) => {
+      // @ts-ignore
+      block.age = e.target.value;
+    }}
+  />
+</div>
+
+<!-- 1327238935998063 -->
+<style>
+  * {
+    /*  */
+  }
+</style>

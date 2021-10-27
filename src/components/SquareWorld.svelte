@@ -36,7 +36,13 @@
       0,
       Math.PI * 2
     );
+    ctx.lineWidth = 2;
+    ctx.globalAlpha = 0.5;
+    ctx.strokeStyle = window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "white"
+      : "black";
     ctx.stroke();
+    ctx.globalAlpha = 1;
   }
 
   export let imageData: ImageData;
@@ -50,15 +56,22 @@
   let tmpCanvas: HTMLCanvasElement;
   let tmpCtx: CanvasRenderingContext2D;
 
+  window
+    .matchMedia("(prefers-color-scheme: dark)")
+    .addEventListener("change", () => {
+      updatePixels(imageData, pixelSize);
+      updateMouse(mouse);
+    });
+
+  $: canvas && updatePixels(imageData, pixelSize);
+  $: canvas && updateMouse(mouse);
+
   onMount(() => {
     ctx = canvas.getContext("2d")!;
     tmpCanvas = document.createElement("canvas");
     tmpCtx = tmpCanvas.getContext("2d")!;
     updatePixels(imageData, pixelSize);
   });
-
-  $: canvas && updatePixels(imageData, pixelSize);
-  $: canvas && updateMouse(mouse);
 </script>
 
 <canvas

@@ -9,6 +9,7 @@ import { clampCircular, randFloat } from "./helpers";
 import { GenePool } from "./gene";
 
 export abstract class World extends Grid<IWorldBlock> {
+  prevStepTime = 0;
   constructor(
     width: number,
     height: number,
@@ -17,13 +18,14 @@ export abstract class World extends Grid<IWorldBlock> {
     super(width, height);
   }
   abstract step(): void;
-  abstract getComponentProps(): Object;
+  abstract getComponentProps(selected: IWorldBlock | null): Object;
   abstract getComponent(): typeof SvelteComponent;
   abstract narrowToCoords(x: number, y: number, narrow: number, length: number): Coords;
 }
 
 export class SquareWorld extends World {
   step() {
+    const start = performance.now();
     const blocks: Readonly<{ block: IWorldBlock, pos: Coords }>[] = [];
     this.forEach((value, x, y) => {
       if (!value) return;
@@ -31,22 +33,25 @@ export class SquareWorld extends World {
     });
     const shuffled = blocks.sort(() => randFloat(0, 1) - 0.5);
     shuffled.forEach(({ block, pos }) => block.live(...pos, this));
+    this.prevStepTime = performance.now() - start;
   }
-  private getPixels() {
+  private getPixels(selected: IWorldBlock | null) {
     const pixels = new Pixels(this.width, this.height);
     this.forEach((block, x, y) => {
       if (!block) return;
+      const color = selected === block
+        ? new Rgba(255, 0, 255, 255)
+        : (block.getColor() || new Rgba(0, 0, 0, 0));
       pixels.setPixel(
         x,
         y,
-        ...(block.getColor() || new Rgba(0, 0, 0, 0))
-          .toArray()
+        ...color.toArray()
       );
     });
     return pixels;
   }
-  getComponentProps() {
-    return { imageData: this.getPixels(), pixelSize: 7 };
+  getComponentProps(selected: IWorldBlock | null) {
+    return { imageData: this.getPixels(selected), pixelSize: 7 };
   }
   getComponent() {
     return SquareWorldComponent;

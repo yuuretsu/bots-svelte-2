@@ -2,7 +2,7 @@ import { Rgba } from "./color";
 import { GENES } from "./gene-tamplates";
 import { randChoice, randInt, random } from "./helpers";
 import { World } from "./world";
-import { Bot } from "./world-block";
+import { Bot } from "./bot";
 
 export type GenePool = Set<GeneTemplate>;
 

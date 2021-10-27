@@ -5,7 +5,8 @@
   import ControlsPanel from "./ControlsPanel.svelte";
 
   import { SquareWorld, World } from "../lib/world";
-  import { Bot, createBotAbilities, IWorldBlock } from "../lib/world-block";
+  import { IWorldBlock } from "../lib/world-block";
+  import { Bot, createBotAbilities } from "../lib/bot";
   import { onDestroy } from "svelte";
   import { writable } from "svelte/store";
   import { loop as createLoop } from "./../lib/loop";
@@ -18,7 +19,7 @@
 
   function step() {
     world.step();
-    worldProps = world.getComponentProps();
+    worldProps = world.getComponentProps(selectedBlock);
     selectedBlock && (selectedBlock = selectedBlock);
   }
 
@@ -32,13 +33,13 @@
     for (let y = 0; y < world.height; y++) {
       for (let x = 0; x < world.width; x++) {
         if (random() > 0.99) {
-          const color = new Rgba(255, 0, 0, 255);
+          const color = new Rgba(127, 127, 127, 127);
           const genome = new Genome(32).fillRandom(world.genePool);
           world.set(x, y, new Bot(color, 100, createBotAbilities(), genome));
         }
       }
     }
-    const worldProps = world.getComponentProps();
+    const worldProps = world.getComponentProps(selectedBlock);
     return { world, worldProps };
   }
 
@@ -56,7 +57,13 @@
   function onClickBlock({ detail }: { detail: { x: number; y: number } }) {
     const { x, y } = detail;
     selectedBlock = world.get(x, y) || null;
-    console.log(selectedBlock);
+    // selectedBlock && (selectedBlock.selected = new Rgba(255, 0, 255, 255));
+    worldProps = world.getComponentProps(selectedBlock);
+  }
+
+  function onClickDeselect() {
+    selectedBlock = null;
+    worldProps = world.getComponentProps(selectedBlock);
   }
 
   function stopLoop(intervalId: number | null) {
@@ -79,6 +86,7 @@
 
   let seed = initiallySeed;
   let sidebarOpened = true;
+  let selectedBlock: null | IWorldBlock = null;
   let intervalId: number | null = null;
   let play = writable(false);
   let fps = writable(60);
@@ -104,8 +112,6 @@
     newWorldHeight,
     namesToGenePool(new Set(enabledGenes), GENES)
   );
-
-  let selectedBlock: null | IWorldBlock = null;
 
   onDestroy(stopLoop.bind(null, intervalId));
 </script>
@@ -141,13 +147,12 @@
         checkboxes: {enabledGenes.join(", ")}
       </div>
     </Accordion>
-    <Accordion title="Выделенный блок">
-      <!--  -->
+    <Accordion title="Выделенный блок" opened={Boolean(selectedBlock)}>
       {#if selectedBlock}
         <svelte:component
           this={selectedBlock.getComponent()}
           block={selectedBlock}
-          on:deselect={() => (selectedBlock = null)}
+          on:deselect={onClickDeselect}
         />
       {/if}
     </Accordion>
