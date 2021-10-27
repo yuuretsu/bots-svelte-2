@@ -43,10 +43,15 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
   cursor: pointer;
+  transition: box-shadow 50ms linear;
 }
 
 button:hover {
   background-color: var(--col-bg-2);
+}
+
+button:active {
+  box-shadow: 0 0 0 3px var(--col-bg-1);
 }
 
 input[type="checkbox"] {
@@ -112,7 +117,8 @@ input[type="checkbox"]::after {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    --shadow: 0 0 10px 0 rgba(255, 255, 255, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.1);
 
     --col-fg-0: var(--col-light-0);
     --col-fg-1: var(--col-light-1);
@@ -121,4 +127,17 @@ input[type="checkbox"]::after {
     --col-bg-1: var(--col-dark-1);
     --col-bg-2: var(--col-dark-2);
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
+}
+
+input::-webkit-inner-spin-button {
+  display: none;
 }
