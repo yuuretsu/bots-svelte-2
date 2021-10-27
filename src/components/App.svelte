@@ -4,7 +4,7 @@
   import Sidebar from "./Sidebar.svelte";
   import ControlsPanel from "./ControlsPanel.svelte";
 
-  import { SquareWorld, World } from "../lib/world";
+  import { SquareWorld } from "../lib/world";
   import { IWorldBlock } from "../lib/world-block";
   import { Bot, createBotAbilities } from "../lib/bot";
   import { onDestroy } from "svelte";
@@ -16,6 +16,8 @@
   import { GENES } from "../lib/gene-tamplates";
   import { GenePool, namesToGenePool } from "../lib/gene";
   import CheckboxGroup from "./CheckboxGroup.svelte";
+  import TextInput from "./TextInput.svelte";
+  import NumberInput from "./NumberInput.svelte";
 
   function step() {
     world.step();
@@ -57,6 +59,7 @@
   function onClickBlock({ detail }: { detail: { x: number; y: number } }) {
     const { x, y } = detail;
     selectedBlock = world.get(x, y) || null;
+    showSelectedBlock = !!selectedBlock;
     // selectedBlock && (selectedBlock.selected = new Rgba(255, 0, 255, 255));
     worldProps = world.getComponentProps(selectedBlock);
   }
@@ -87,13 +90,14 @@
   let seed = initiallySeed;
   let sidebarOpened = true;
   let selectedBlock: null | IWorldBlock = null;
+  let showSelectedBlock = !!selectedBlock;
   let intervalId: number | null = null;
   let play = writable(false);
-  let fps = writable(60);
-  let loop = createLoop(step, $fps, $play);
+  let fpsLimit = writable(240);
+  let loop = createLoop(step, $fpsLimit, $play);
   play.subscribe(onSetPlay);
-  fps.subscribe(() => {
-    loop.setFps($fps, $play);
+  fpsLimit.subscribe(() => {
+    loop.setFps($fpsLimit, $play);
   });
 
   let showCss = false;
@@ -139,7 +143,7 @@
   <Sidebar opened={sidebarOpened}>
     <button on:click={onClickStep}>step</button>
     <Accordion title="Всяческое">
-      <input type="range" min="1" max="240" bind:value={$fps} />
+      <input type="range" min="1" max="240" bind:value={$fpsLimit} />
       <div>
         <label>seed: <input type="number" bind:value={seed} /></label>
       </div>
@@ -147,7 +151,7 @@
         checkboxes: {enabledGenes.join(", ")}
       </div>
     </Accordion>
-    <Accordion title="Выделенный блок" opened={Boolean(selectedBlock)}>
+    <Accordion title="Выделенный блок" opened={showSelectedBlock}>
       {#if selectedBlock}
         <svelte:component
           this={selectedBlock.getComponent()}
@@ -166,13 +170,11 @@
         bind:checked={enabledGenes}
       />
     </Accordion>
-    <Accordion title="Новый мир">
-      <label>
-        Ширина<input type="number" bind:value={newWorldWidth} />
-      </label>
-      <label>
-        Высота<input type="number" bind:value={newWorldHeight} />
-      </label>
+    <Accordion title="Новый мир" opened>
+      Ширина
+      <NumberInput bind:value={newWorldWidth} placeholder="ширина" />
+      Высота
+      <NumberInput bind:value={newWorldHeight} placeholder="высота" />
       <button on:click={onClickRestart}>Рестарт</button>
     </Accordion>
     <Accordion title="dev">

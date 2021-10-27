@@ -24,7 +24,7 @@
     value={block.age}
     on:input={(e) => {
       // @ts-ignore
-      block.age = e.target.value;
+      block.age = +e.target.value;
     }}
   />
 </div>
@@ -34,7 +34,7 @@
     value={block.health}
     on:input={(e) => {
       // @ts-ignore
-      block.age = e.target.value;
+      block.health = +e.target.value;
     }}
   />
 </div>

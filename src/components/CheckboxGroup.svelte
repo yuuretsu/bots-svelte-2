@@ -1,4 +1,5 @@
 <script lang="ts">
+  import TextInput from "./TextInput.svelte";
   import { Rgba } from "../lib/color";
 
   export let values: { value: string; content: string; color?: Rgba }[] = [];
@@ -7,7 +8,9 @@
 </script>
 
 <div class="wrapper">
-  <input class="filter" placeholder="filter" type="text" bind:value={filter} />
+  <div class="filter">
+    <TextInput bind:value={filter} placeholder="фильтр" />
+  </div>
   <div class="wrapper-inner wrapper__inner">
     {#each values.filter(({ content }) => content
         .toLowerCase()
@@ -47,16 +50,7 @@
     flex-wrap: wrap;
   }
   .filter {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 5px 5px;
     margin-bottom: 5px;
-    width: 100%;
-    border-radius: 5px;
-    border: none;
-    border-bottom: 1px solid var(--col-bg-2);
-    background-color: var(--col-bg-1);
-    outline: none;
   }
   label {
     flex-grow: 1;
