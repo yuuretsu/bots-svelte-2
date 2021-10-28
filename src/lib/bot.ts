@@ -76,14 +76,21 @@ export class Bot implements IWorldBlock {
   }
   live(x: number, y: number, world: World) {
     if (
+      this.energy <= 0 ||
       this.age >= 2000 ||
-      this.energy < 1 ||
       this.health <= 0
     ) {
       world.remove(x, y);
       return;
     }
+
+    if (
+      this.energy < 1 ||
+      this.energy > 200
+    ) this.health -= 0.1;
+
     this.genome.doAction(this, x, y, world);
+    this.energy -= 0.1;
     this.age++;
   }
   getComponent() {
@@ -91,5 +98,9 @@ export class Bot implements IWorldBlock {
   }
   getColor() {
     return this.rgba;
+  }
+  getHealthColor() {
+    return new Rgba(100, 50, 50, 255)
+      .interpolate(new Rgba(150, 200, 255, 255), this.health);
   }
 }

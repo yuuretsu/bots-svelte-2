@@ -8,6 +8,5 @@ export interface IWorldBlock {
   getComponent(): typeof SvelteComponent;
   onAttack(bot: Bot, value: number): number;
   getColor(): Rgba | null;
+  getHealthColor(): Rgba | null;
 }
-
-export type BlockVisualiser = (block: IWorldBlock) => Rgba | null;

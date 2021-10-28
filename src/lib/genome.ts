@@ -1,11 +1,12 @@
 import { Gene, GenePool, NULL_GENE, NULL_GENE_TEMPLATE, randGene } from "./gene";
 import { clampCircular, clamp, randChoice, randFloat, randInt, random } from "./helpers";
 import { World } from "./world";
-import { Bot } from "./world-block";
+import { Bot } from "./bot";
 
 export class Genome {
   private _pointer: number = 0;
   readonly genes: Gene[];
+  lastMsg = "";
   constructor(length: number) {
     this.genes = new Array<Gene>(length).fill(NULL_GENE);
   }
@@ -62,6 +63,7 @@ export class Genome {
         : this.pointer = this.pointer + 1;
       if (result.completed) {
         // this.activeGene = this.recentlyUsedGenes.pop() || null;
+        this.lastMsg = result.msg || "";
         return;
       };
     }

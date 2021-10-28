@@ -18,10 +18,14 @@
   import CheckboxGroup from "./CheckboxGroup.svelte";
   import TextInput from "./TextInput.svelte";
   import NumberInput from "./NumberInput.svelte";
+  import { VIEW_MODES } from "../lib/view-modes";
 
   function step() {
     world.step();
-    worldProps = world.getComponentProps(selectedBlock);
+    worldProps = world.getComponentProps(
+      selectedBlock,
+      VIEW_MODES[$viewMode]!.blockToColor
+    );
     selectedBlock && (selectedBlock = selectedBlock);
   }
 
@@ -34,14 +38,17 @@
     const world = new SquareWorld(width, height, genePool);
     for (let y = 0; y < world.height; y++) {
       for (let x = 0; x < world.width; x++) {
-        if (random() > 0.99) {
+        if (random() > 0.1) {
           const color = new Rgba(127, 127, 127, 127);
           const genome = new Genome(32).fillRandom(world.genePool);
           world.set(x, y, new Bot(color, 100, 1, createBotAbilities(), genome));
         }
       }
     }
-    const worldProps = world.getComponentProps(selectedBlock);
+    const worldProps = world.getComponentProps(
+      selectedBlock,
+      VIEW_MODES[$viewMode]!.blockToColor
+    );
     return { world, worldProps };
   }
 
@@ -62,12 +69,30 @@
     showSelectedBlock = !!selectedBlock;
     showSelectedBlock && (sidebarOpened = true);
     // selectedBlock && (selectedBlock.selected = new Rgba(255, 0, 255, 255));
-    worldProps = world.getComponentProps(selectedBlock);
+    worldProps = world.getComponentProps(
+      selectedBlock,
+      VIEW_MODES[$viewMode]!.blockToColor
+    );
+
+    const color = new Rgba(127, 127, 127, 127);
+    const genome = new Genome(32).fillRandom(world.genePool);
+
+    const energy = GENES["photosynthesis"]!.action(
+      new Bot(color, 100, 1, createBotAbilities(), genome),
+      x,
+      y,
+      world,
+      { option: 1, branches: [0, 0] }
+    ).msg;
+    console.log(energy);
   }
 
   function onClickDeselect() {
     selectedBlock = null;
-    worldProps = world.getComponentProps(selectedBlock);
+    worldProps = world.getComponentProps(
+      selectedBlock,
+      VIEW_MODES[$viewMode]!.blockToColor
+    );
   }
 
   function stopLoop(intervalId: number | null) {
@@ -89,6 +114,7 @@
   }
 
   let seed = initiallySeed;
+  let viewMode = writable("normal");
   let sidebarOpened = true;
   let selectedBlock: null | IWorldBlock = null;
   let showSelectedBlock = !!selectedBlock;
@@ -117,6 +143,13 @@
     newWorldHeight,
     namesToGenePool(new Set(enabledGenes), GENES)
   );
+
+  viewMode.subscribe(() => {
+    worldProps = world.getComponentProps(
+      selectedBlock,
+      VIEW_MODES[$viewMode]!.blockToColor
+    );
+  });
 
   onDestroy(stopLoop.bind(null, intervalId));
 </script>
@@ -159,7 +192,17 @@
           block={selectedBlock}
           on:deselect={onClickDeselect}
         />
+      {:else}
+        Кликните по цветному пикселю на карте, чтобы увидеть информацию о нём.
       {/if}
+    </Accordion>
+    <Accordion title="Режим просмотра" opened>
+      {#each Object.entries(VIEW_MODES) as [key, { name }]}
+        <label>
+          <input type="radio" bind:group={$viewMode} value={key} />
+          {name}
+        </label>
+      {/each}
     </Accordion>
     <Accordion title="Генофонд" opened>
       <CheckboxGroup

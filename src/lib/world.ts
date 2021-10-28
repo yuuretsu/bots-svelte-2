@@ -7,6 +7,7 @@ import { SvelteComponent } from "svelte";
 import { Rgba } from "./color";
 import { clampCircular, randFloat } from "./helpers";
 import { GenePool } from "./gene";
+import { BlockVisualiser, VIEW_MODES } from "./view-modes";
 
 export abstract class World extends Grid<IWorldBlock> {
   prevStepTime = 0;
@@ -18,7 +19,7 @@ export abstract class World extends Grid<IWorldBlock> {
     super(width, height);
   }
   abstract step(): void;
-  abstract getComponentProps(selected: IWorldBlock | null): Object;
+  abstract getComponentProps(selected: IWorldBlock | null, visualiser: BlockVisualiser): Object;
   abstract getComponent(): typeof SvelteComponent;
   abstract narrowToCoords(x: number, y: number, narrow: number, length: number): Coords;
 }
@@ -35,13 +36,13 @@ export class SquareWorld extends World {
     shuffled.forEach(({ block, pos }) => block.live(...pos, this));
     this.prevStepTime = performance.now() - start;
   }
-  private getPixels(selected: IWorldBlock | null) {
+  private getPixels(selected: IWorldBlock | null, visualiser: BlockVisualiser) {
     const pixels = new Pixels(this.width, this.height);
     this.forEach((block, x, y) => {
       if (!block) return;
       const color = selected === block
         ? new Rgba(255, 0, 255, 255)
-        : (block.getColor() || new Rgba(0, 0, 0, 0));
+        : (visualiser(block) || new Rgba(0, 0, 0, 0));
       pixels.setPixel(
         x,
         y,
@@ -50,8 +51,8 @@ export class SquareWorld extends World {
     });
     return pixels;
   }
-  getComponentProps(selected: IWorldBlock | null) {
-    return { imageData: this.getPixels(selected), pixelSize: 7 };
+  getComponentProps(selected: IWorldBlock | null, visualiser: BlockVisualiser) {
+    return { imageData: this.getPixels(selected, visualiser), pixelSize: 7 };
   }
   getComponent() {
     return SquareWorldComponent;

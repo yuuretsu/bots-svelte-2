@@ -82,6 +82,7 @@
       }}
     />
   </div>
+  <div class="row">{block.genome.lastMsg}</div>
 </div>
 
 <!-- 1327238935998063 -->

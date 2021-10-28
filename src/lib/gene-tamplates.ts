@@ -52,7 +52,12 @@ export const GENES: { [index: string]: GeneTemplate } = {
     color: new Rgba(0, 255, 0, 255),
     colorInfluence: 0.01,
     action: (bot, x, y, world, property) => {
-      const energy = 1 * bot.abilities.photosynthesis ** 2;
+      // const energy = 1 * bot.abilities.photosynthesis ** 2;
+      // const energy = ((world.height - y) / world.height) ** 5 * 10;
+      const energy = Math.max(0, 0 - Math.hypot((x - world.width / 2) / 10, (y - world.height / 2) / 10) ** 5 + 2.5);
+      // const energy = Number(Math.hypot(x - world.width / 2, y - world.height / 2) < 25);
+      // const energy = Math.max(0, 0 - Math.hypot(x / 20 - world.width / 2, y / 20 - world.width / 2) ** 2 + 5);
+      // const energy = Math.hypot(x - world.width, y - world.height);
       bot.energy += energy;
       bot.increaseAbility('photosynthesis');
       bot.health = Math.min(1, bot.health + 0.01);
