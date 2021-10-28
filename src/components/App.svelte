@@ -135,8 +135,8 @@
 
   $: world.genePool = namesToGenePool(new Set(enabledGenes), GENES);
 
-  let newWorldWidth = 50;
-  let newWorldHeight = 50;
+  let newWorldWidth = 100;
+  let newWorldHeight = 100;
 
   let { world, worldProps } = createWorld(
     newWorldWidth,
