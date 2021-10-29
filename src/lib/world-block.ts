@@ -9,4 +9,5 @@ export interface IWorldBlock {
   onAttack(bot: Bot, value: number): number;
   getColor(): Rgba | null;
   getHealthColor(): Rgba | null;
+  getEnergyColor(): Rgba | null;
 }

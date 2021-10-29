@@ -19,4 +19,8 @@ export const VIEW_MODES: { [key: string]: ViewMode } = {
     name: "Здоровье",
     blockToColor: (block) => block.getHealthColor(),
   },
+  energy: {
+    name: "Энергия",
+    blockToColor: (block) => block.getEnergyColor(),
+  },
 }

@@ -4,7 +4,7 @@
   import Sidebar from "./Sidebar.svelte";
   import ControlsPanel from "./ControlsPanel.svelte";
 
-  import { SquareWorld } from "../lib/world";
+  import { SquareWorld, World } from "../lib/world";
   import { IWorldBlock } from "../lib/world-block";
   import { Bot, createBotAbilities } from "../lib/bot";
   import { onDestroy } from "svelte";
@@ -19,6 +19,7 @@
   import TextInput from "./TextInput.svelte";
   import NumberInput from "./NumberInput.svelte";
   import { VIEW_MODES } from "../lib/view-modes";
+  import RadioGroup from "./RadioGroup.svelte";
 
   function step() {
     world.step();
@@ -36,9 +37,23 @@
 
   function createWorld(width: number, height: number, genePool: GenePool) {
     const world = new SquareWorld(width, height, genePool);
+    const roundEnergy = (x: number, y: number, world: World) =>
+      Math.max(
+        0,
+        0 -
+          Math.hypot((x - world.width / 2) / 15, (y - world.height / 2) / 15) **
+            2 +
+          1.5
+      );
+    world.setGetEnergyStrategy(roundEnergy);
     for (let y = 0; y < world.height; y++) {
       for (let x = 0; x < world.width; x++) {
-        if (random() > 0.1) {
+        const dist = Math.hypot(x - world.width / 2, y - world.height / 2);
+        if (
+          // random() > 0.1
+          dist < 20 &&
+          random() > 0.5
+        ) {
           const color = new Rgba(127, 127, 127, 127);
           const genome = new Genome(32).fillRandom(world.genePool);
           world.set(x, y, new Bot(color, 100, 1, createBotAbilities(), genome));
@@ -135,8 +150,8 @@
 
   $: world.genePool = namesToGenePool(new Set(enabledGenes), GENES);
 
-  let newWorldWidth = 100;
-  let newWorldHeight = 100;
+  let newWorldWidth = 150;
+  let newWorldHeight = 150;
 
   let { world, worldProps } = createWorld(
     newWorldWidth,
@@ -181,9 +196,13 @@
       <div>
         <label>seed: <input type="number" bind:value={seed} /></label>
       </div>
-      <div>
-        checkboxes: {enabledGenes.join(", ")}
-      </div>
+      <button
+        on:click={() => {
+          world.forEach((block) => {
+            if (block instanceof Bot && random() > 0.5) block.health = 0;
+          });
+        }}>Убить половину</button
+      >
     </Accordion>
     <Accordion title="Выделенный блок" opened={showSelectedBlock}>
       {#if selectedBlock}
@@ -197,12 +216,13 @@
       {/if}
     </Accordion>
     <Accordion title="Режим просмотра" opened>
-      {#each Object.entries(VIEW_MODES) as [key, { name }]}
-        <label>
-          <input type="radio" bind:group={$viewMode} value={key} />
-          {name}
-        </label>
-      {/each}
+      <RadioGroup
+        values={Object.entries(VIEW_MODES).map(([key, { name }]) => ({
+          value: key,
+          content: name,
+        }))}
+        bind:checked={$viewMode}
+      />
     </Accordion>
     <Accordion title="Генофонд" opened>
       <CheckboxGroup

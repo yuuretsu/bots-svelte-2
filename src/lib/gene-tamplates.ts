@@ -54,7 +54,8 @@ export const GENES: { [index: string]: GeneTemplate } = {
     action: (bot, x, y, world, property) => {
       // const energy = 1 * bot.abilities.photosynthesis ** 2;
       // const energy = ((world.height - y) / world.height) ** 5 * 10;
-      const energy = Math.max(0, 0 - Math.hypot((x - world.width / 2) / 30, (y - world.height / 2) / 30) ** 5 + 1);
+      // const energy = Math.max(0, 0 - Math.hypot((x - world.width / 2) / 30, (y - world.height / 2) / 30) ** 5 + 1);
+      const energy = world.getEnergy(x, y) * bot.abilities.photosynthesis ** 2;
       // const energy = Number(Math.hypot(x - world.width / 2, y - world.height / 2) < 25);
       // const energy = Math.max(0, 0 - Math.hypot(x / 20 - world.width / 2, y / 20 - world.width / 2) ** 2 + 5);
       // const energy = Math.hypot(x - world.width, y - world.height);
@@ -66,7 +67,7 @@ export const GENES: { [index: string]: GeneTemplate } = {
   },
   attack: {
     name: 'Атака',
-    description: `Бот атакует блок перед собой, забирая себе часть его энергии.Повышает здоровье на 0.01.`,
+    description: `Бот атакует блок перед собой, забирая себе часть его энергии. Повышает здоровье на 0.01.`,
     defaultEnabled: true,
     color: new Rgba(255, 0, 0, 255),
     colorInfluence: 0.01,

@@ -1,9 +1,8 @@
 <script lang="ts">
   import TextInput from "./TextInput.svelte";
-  import { Rgba } from "../lib/color";
 
-  export let values: { value: string; content: string; color?: Rgba }[] = [];
-  export let checked: string[] = [];
+  export let values: { value: string; content: string }[] = [];
+  export let checked: string | undefined = undefined;
   let filter = "";
 </script>
 
@@ -16,7 +15,7 @@
         .toLowerCase()
         .match(new RegExp(filter.toLowerCase()))) as { value, content }}
       {#key content}
-        <label class:checked={checked.includes(value)}>
+        <label class:checked={checked === value}>
           <!-- {#if color}
           <span
             style={color && checked.includes(value)
@@ -25,7 +24,7 @@
           />
         {/if} -->
           <input
-            type="checkbox"
+            type="radio"
             class="visually-hidden"
             {value}
             bind:group={checked}

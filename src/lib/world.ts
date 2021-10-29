@@ -11,6 +11,7 @@ import { BlockVisualiser, VIEW_MODES } from "./view-modes";
 
 export abstract class World extends Grid<IWorldBlock> {
   prevStepTime = 0;
+  getEnergyStrategy = (_x: number, _y: number, _world: World) => 1;
   constructor(
     width: number,
     height: number,
@@ -19,6 +20,10 @@ export abstract class World extends Grid<IWorldBlock> {
     super(width, height);
   }
   abstract step(): void;
+  setGetEnergyStrategy(strategy: (x: number, y: number, world: World) => number) {
+    this.getEnergyStrategy = strategy;
+  }
+  abstract getEnergy(x: number, y: number): number;
   abstract getComponentProps(selected: IWorldBlock | null, visualiser: BlockVisualiser): Object;
   abstract getComponent(): typeof SvelteComponent;
   abstract narrowToCoords(x: number, y: number, narrow: number, length: number): Coords;
@@ -36,6 +41,9 @@ export class SquareWorld extends World {
     shuffled.forEach(({ block, pos }) => block.live(...pos, this));
     this.prevStepTime = performance.now() - start;
   }
+  getEnergy(x: number, y: number): number {
+    return this.getEnergyStrategy(x, y, this);
+  }
   private getPixels(selected: IWorldBlock | null, visualiser: BlockVisualiser) {
     const pixels = new Pixels(this.width, this.height);
     this.forEach((block, x, y) => {
@@ -52,7 +60,7 @@ export class SquareWorld extends World {
     return pixels;
   }
   getComponentProps(selected: IWorldBlock | null, visualiser: BlockVisualiser) {
-    return { imageData: this.getPixels(selected, visualiser), pixelSize: 7 };
+    return { imageData: this.getPixels(selected, visualiser), pixelSize: 5 };
   }
   getComponent() {
     return SquareWorldComponent;

@@ -103,4 +103,8 @@ export class Bot implements IWorldBlock {
     return new Rgba(100, 50, 50, 255)
       .interpolate(new Rgba(150, 200, 255, 255), this.health);
   }
+  getEnergyColor() {
+    return new Rgba(0, 0, 100, 255)
+      .interpolate(new Rgba(255, 255, 0, 255), this.energy / 200);
+  }
 }
