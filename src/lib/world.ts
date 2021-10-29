@@ -73,7 +73,7 @@ export class SquareWorld extends World {
   }
 }
 
-const SQUARE_MOORE_NEIGHBOURHOOD: Coords[] = [
+export const SQUARE_MOORE_NEIGHBOURHOOD: Coords[] = [
   [-1, -1],
   [0, -1],
   [1, -1],

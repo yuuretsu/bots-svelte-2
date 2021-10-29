@@ -4,7 +4,7 @@
   import Sidebar from "./Sidebar.svelte";
   import ControlsPanel from "./ControlsPanel.svelte";
 
-  import { SquareWorld, World } from "../lib/world";
+  import { SquareWorld, SQUARE_MOORE_NEIGHBOURHOOD, World } from "../lib/world";
   import { IWorldBlock } from "../lib/world-block";
   import { Bot, createBotAbilities } from "../lib/bot";
   import { onDestroy } from "svelte";
@@ -20,6 +20,7 @@
   import NumberInput from "./NumberInput.svelte";
   import { VIEW_MODES } from "../lib/view-modes";
   import RadioGroup from "./RadioGroup.svelte";
+  import { Coords } from "../lib/grid";
 
   function step() {
     world.step();
@@ -37,14 +38,23 @@
 
   function createWorld(width: number, height: number, genePool: GenePool) {
     const world = new SquareWorld(width, height, genePool);
+    const calcAround = (world: World, x: number, y: number) =>
+      SQUARE_MOORE_NEIGHBOURHOOD.map(
+        (local) => [local[0] + x, local[1] + y] as Coords
+      )
+        .map((global) => world.fixCoords(...global))
+        .map((fixed) => world.get(...fixed))
+        .filter(Boolean).length;
     const roundEnergy = (x: number, y: number, world: World) =>
-      Math.max(
+      (Math.max(
         0,
         0 -
-          Math.hypot((x - world.width / 2) / 15, (y - world.height / 2) / 15) **
+          Math.hypot((x - world.width / 2) / 30, (y - world.height / 2) / 30) **
             2 +
           1.5
-      );
+      ) *
+        (8 - calcAround(world, x, y))) /
+      8;
     world.setGetEnergyStrategy(roundEnergy);
     for (let y = 0; y < world.height; y++) {
       for (let x = 0; x < world.width; x++) {
@@ -100,6 +110,7 @@
       { option: 1, branches: [0, 0] }
     ).msg;
     console.log(energy);
+    console.log(selectedBlock);
   }
 
   function onClickDeselect() {
@@ -201,8 +212,10 @@
           world.forEach((block) => {
             if (block instanceof Bot && random() > 0.5) block.health = 0;
           });
-        }}>Убить половину</button
+        }}
       >
+        Убить половину
+      </button>
     </Accordion>
     <Accordion title="Выделенный блок" opened={showSelectedBlock}>
       {#if selectedBlock}
